@@ -1,0 +1,239 @@
+<!-- ================= BOUTON PANIER ================= -->
+<button class="cart-btn" (click)="toggleCart()">
+  🛒 <span class="cart-count">{{ getCartCount() }}</span>
+</button>
+
+<!-- ================= DRAWER PANIER PERSONNALISÉ ================= -->
+<div class="cart-drawer" [class.show]="cartOpen">
+  <div class="cart-drawer-header">
+    <h5>Votre Panier</h5>
+    <button type="button" class="btn-close" (click)="toggleCart()">✕</button>
+  </div>
+  <div class="cart-drawer-body">
+    <div id="cart-items">
+      <div *ngIf="cart.length === 0" class="empty-cart">
+        Votre panier est vide
+      </div>
+      <div *ngFor="let item of cart; let i = index"
+           class="cart-item"
+           [class.removing]="removingIndex === i">
+        <div class="cart-item-details">
+          <strong>{{ item.name }}</strong><br>
+          <small>{{ item.price }} Ar x {{ item.quantity }} = {{ item.price * item.quantity }} Ar</small>
+        </div>
+        <div class="cart-item-actions">
+          <div class="cart-item-quantity">
+            <button (click)="decrementCartItem(i)">−</button>
+            <span>{{ item.quantity }}</span>
+            <button (click)="incrementCartItem(i)">+</button>
+          </div>
+          <span class="remove-btn" (click)="removeCartItem(i)">🗑️</span>
+        </div>
+      </div>
+    </div>
+    <hr class="separator">
+    <div class="cart-total-section">
+      <h5>Total :</h5>
+      <h5>{{ getCartTotal() }} Ar</h5>
+    </div>
+    <button class="btn btn-gradient w-100 mt-3 py-3" (click)="openPaymentModal()" [disabled]="cart.length === 0">
+      Passer au paiement →
+    </button>
+  </div>
+</div>
+
+<!-- ================= OVERLAY PANIER ================= -->
+<div class="cart-overlay" [class.show]="cartOpen" (click)="toggleCart()"></div>
+
+<!-- ================= MODAL DÉTAIL PRODUIT ================= -->
+<div class="modal-overlay" [class.show]="showProductModal" (click)="closeProductModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Détail du produit</h5>
+      <button type="button" class="btn-close" (click)="closeProductModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <img [src]="currentProductImage" class="img-fluid rounded-4 mb-3" alt="Image principale">
+          <div class="d-flex gap-2 flex-wrap thumbnails">
+            <img *ngFor="let thumb of currentProductThumbnails; let i = index"
+              [src]="thumb"
+              class="thumbnail"
+              [class.active]="i === 0"
+              (click)="selectThumbnail(i, thumb)"
+              alt="Miniature">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h3 class="mb-3">{{ currentProductName }}</h3>
+          <p class="text-muted">Prix unitaire : <span>{{ currentProductPrice }}</span> Ar</p>
+          <p class="description mt-2">{{ currentProductDescription }}</p>
+          <div class="mb-4">
+            <label for="quantity" class="form-label">Quantité</label>
+            <div class="input-group" style="width: 140px;">
+              <button class="btn btn-outline-secondary" (click)="decrementQuantity()">−</button>
+              <input type="number" [(ngModel)]="quantity" class="cart-item-quantity" min="1" max="99">
+              <button class="btn btn-outline-secondary" (click)="incrementQuantity()">+</button>
+            </div>
+          </div>
+          <p class="fs-4">Total :  <span class="fw-bold text-gradient">{{ currentProductPrice * quantity }}</span> Ar</p>
+          <button class="btn btn-gradient w-100 py-3" (click)="addToCart()">
+            🛒 Ajouter au panier
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL PAIEMENT ================= -->
+<div class="modal-overlay" [class.show]="showPaymentModal" (click)="closePaymentModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5>Paiement</h5>
+      <button type="button" class="btn-close" (click)="closePaymentModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <h6 class="mb-3">Récapitulatif de votre commande</h6>
+          <div class="payment-items">
+            <div *ngFor="let item of cart" class="payment-item">
+              <span>{{ item.name }} x{{ item.quantity }}</span>
+              <span>{{ item.price * item.quantity }}€</span>
+            </div>
+          </div>
+          <hr class="separator">
+          <p class="payment-total">
+            <span>Total</span>
+            <span>{{ getCartTotal() }}€</span>
+          </p>
+        </div>
+        <div class="col-md-6">
+          <h6 class="mb-3">Informations de paiement</h6>
+          <form (ngSubmit)="submitPayment()">
+            <div class="mb-3">
+              <label for="name" class="form-label">Nom complet</label>
+              <input type="text" class="form-control" [(ngModel)]="paymentForm.name" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" [(ngModel)]="paymentForm.email" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="address" class="form-label">Adresse de livraison</label>
+              <textarea class="form-control" [(ngModel)]="paymentForm.address" name="address" rows="2" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="card" class="form-label">Numéro de carte</label>
+              <input type="text" class="form-control" [(ngModel)]="paymentForm.card" name="card" placeholder="**** **** **** ****" required>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label for="expiry" class="form-label">Expiration</label>
+                <input type="text" class="form-control" [(ngModel)]="paymentForm.expiry" name="expiry" placeholder="MM/AA" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="cvv" class="form-label">CVV</label>
+                <input type="text" class="form-control" [(ngModel)]="paymentForm.cvv" name="cvv" placeholder="123" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-gradient w-100">Confirmer le paiement</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Solutions E‑commerce Premium 🚀</h1>
+    <p class="lead">Développement, optimisation et scaling digital</p>
+  </div>
+</section>
+
+<!-- ================= PRODUITS ================= -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold display-5">Nos Produits</h2>
+      <p class="text-muted fs-4">Des solutions puissantes pour accélérer votre business</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- PRODUIT 1 -->
+      <div class="col-md-4">
+        <div class="product-card">
+          <div class="product-img">
+            <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&auto=format" class="img-fluid" alt="Boutique Premium">
+            <div class="overlay">
+              <button class="btn btn-gradient view-details" (click)="openProductModal('Boutique Premium', 1499)">
+                Voir détail 👁️
+              </button>
+            </div>
+          </div>
+          <div class="p-3">
+            <h5>Boutique Premium</h5>
+            <p class="description">Solution clé en main pour lancer votre boutique en ligne.</p>
+            <h6 class="fw-bold">1499€</h6>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUIT 2 -->
+      <div class="col-md-4">
+        <div class="product-card">
+          <div class="product-img">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format" class="img-fluid" alt="Pack Marketing">
+            <div class="overlay">
+              <button class="btn btn-gradient view-details" (click)="openProductModal('Pack Marketing', 799)">
+                Voir détail 👁️
+              </button>
+            </div>
+          </div>
+          <div class="p-3">
+            <h5>Pack Marketing</h5>
+            <p class="description">Stratégies marketing avancées pour booster vos ventes.</p>
+            <h6 class="fw-bold">799€</h6>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUIT 3 -->
+      <div class="col-md-4">
+        <div class="product-card">
+          <div class="product-img">
+            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&auto=format" class="img-fluid" alt="Audit SEO">
+            <div class="overlay">
+              <button class="btn btn-gradient view-details" (click)="openProductModal('Audit SEO', 499)">
+                Voir détail 👁️
+              </button>
+            </div>
+          </div>
+          <div class="p-3">
+            <h5>Audit SEO</h5>
+            <p class="description">Analyse complète et recommandations pour votre référencement.</p>
+            <h6 class="fw-bold">499€</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="text-center">
+  <div class="container">
+    <div class="social-icons mb-3">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+    <p class="mb-0">© 2026 NovaCommerce - ESN E‑commerce</p>
+  </div>
+</footer>
+

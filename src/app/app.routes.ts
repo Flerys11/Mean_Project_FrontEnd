@@ -27,6 +27,19 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'client',
+    component: BlankComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () =>
+          import('./pages/client/client.routes').then(
+            (m) => m.ClientRoutes
+          ),
+      },
+    ],
+  },
+  {
     path: 'authentication',
     loadChildren: () =>
       import('./pages/authentication/authentication.routes').then(
