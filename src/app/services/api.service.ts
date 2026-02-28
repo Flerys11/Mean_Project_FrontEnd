@@ -6,9 +6,10 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 })
 export class ApiService {
   //url backend
-  ip :string = 'http://localhost:3000/';
+  ip: string = 'http://localhost:3000/';
 
-
+  //login
+  loginUrl = 'auth/login';
   constructor(private http: HttpClient) { }
 
   private httpOptions = {
@@ -16,6 +17,10 @@ export class ApiService {
       'Content-Type': 'application/json',
     })
   };
+
+  UrlLogin(){
+    return this.ip + this.loginUrl;
+  }
 
 
 
