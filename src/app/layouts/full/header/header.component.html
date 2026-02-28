@@ -31,7 +31,7 @@
       <span>S'inscrire</span>
     </button>
 
-    <button mat-menu-item [routerLink]="['/authentication/login']">
+    <button mat-menu-item (click)="logout()">
       <mat-icon class="d-flex align-items-center">
         <i-tabler name="logout" class="icon-18 d-flex"></i-tabler>
       </mat-icon>
