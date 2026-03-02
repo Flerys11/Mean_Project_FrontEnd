@@ -80,6 +80,10 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  register(data: any): Observable<any> {
+    const apiUrl = this.apiService.UrlRegister();
+    return this.http.post(`${apiUrl}`, data);
+  }
 
 }
 

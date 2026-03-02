@@ -14,11 +14,23 @@ export const navItems: NavItem[] = [
     navCap: 'Gestion du Boutique',
   },
 
+/*  {
+    displayName: 'Forms',
+    iconName: 'rosette',
+    bgcolor: 'accent',
+    route: '/ui-components/forms',
+  },*/
+  {
+    displayName: 'Boutiques',
+    iconName: 'list',
+    bgcolor: 'warning',
+    route: '/ui-components/boutiques',
+  },
   {
     displayName: 'Articles',
-    iconName: 'poker-chip',
+    iconName: 'list',
     bgcolor: 'warning',
-    route: '/ui-components/tables',
+    route: '/ui-components/articles',
   },
   {
     displayName: 'Commandes',
@@ -30,7 +42,7 @@ export const navItems: NavItem[] = [
     displayName: 'Categories',
     iconName: 'list',
     bgcolor: 'success',
-    route: '/ui-components/categorie',
+    route: '/ui-components/lists',
   },
 
 ];

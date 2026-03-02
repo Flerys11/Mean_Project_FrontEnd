@@ -10,6 +10,7 @@ export class ApiService {
 
   //login
   loginUrl = 'auth/login';
+  registerUrl = 'auth/inscription';
   constructor(private http: HttpClient) { }
 
   private httpOptions = {
@@ -20,6 +21,10 @@ export class ApiService {
 
   UrlLogin(){
     return this.ip + this.loginUrl;
+  }
+
+  UrlRegister(){
+    return this.ip + this.registerUrl;
   }
 
 
