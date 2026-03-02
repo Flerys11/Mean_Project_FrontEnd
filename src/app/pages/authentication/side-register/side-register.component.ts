@@ -1,35 +1,74 @@
-import { Component } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { MaterialModule } from '../../../material.module';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MaterialModule } from 'src/app/material.module';
+import { AuthService } from 'src/app/services/auth.service';
+import { Router, RouterLink } from '@angular/router';
+import { BoutiqueService } from 'src/app/services/boutique/boutique.service';
 
 @Component({
-  selector: 'app-side-register',
   standalone: true,
-  imports: [RouterModule, MaterialModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './side-register.component.html',
+  selector: 'app-register',
+  imports: [CommonModule, ReactiveFormsModule, MaterialModule, RouterLink],
+  templateUrl: './side-register.component.html'
 })
-export class AppSideRegisterComponent {
-  constructor(private router: Router) {}
+export class AppSideRegisterComponent implements OnInit {
 
-  form = new FormGroup({
-    uname: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    email: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.required]),
-  });
+  form: FormGroup;
+  errorMessage = '';
+  loading = false;
+  boutiques: any[] = [];
 
-  get f() {
-    return this.form.controls;
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private boutiqueService: BoutiqueService
+  ) {
+
+    this.form = this.fb.group({
+      nom_boutique: ['', Validators.required],
+      type_boutique: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      mot_de_passe: ['', [Validators.required, Validators.minLength(6)]],
+      contact: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^\d{10}$/)
+        ]
+      ]
+    });
+  }
+
+  ngOnInit() {
+    this.loadBoutiques();
+  }
+
+  loadBoutiques() {
+    this.boutiqueService.getAll().subscribe((res: any) => {
+      this.boutiques = res.docs || res;
+    });
   }
 
   submit() {
-    // console.log(this.form.value);
-    this.router.navigate(['/']);
+
+    if (this.form.invalid) return;
+
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.authService.register(this.form.value)
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          alert('Inscription réussie');
+          this.router.navigate(['/authentication/login']);
+        },
+        error: (err) => {
+          this.loading = false;
+          this.errorMessage = err.error?.message || 'Erreur serveur';
+        }
+      });
   }
 }

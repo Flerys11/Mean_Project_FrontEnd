@@ -1,17 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ArticleService, Article } from 'src/app/services/article/article.service';
 
-interface Product {
+interface CartItem {
   name: string;
   price: number;
   quantity: number;
-}
-
-interface ProductDetail {
-  mainImage: string;
-  thumbnails: string[];
-  longDescription: string;
 }
 
 interface PaymentFormData {
@@ -31,45 +26,16 @@ interface PaymentFormData {
   styleUrl: './client.component.scss'
 })
 export class ClientComponent implements OnInit {
-  // Données des produits
-  productDetails: { [key: string]: ProductDetail } = {
-    'Boutique Premium': {
-      mainImage: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600',
-      thumbnails: [
-        'https://images.unsplash.com/photo-1556742031-c6961e8560b0?w=200',
-        'https://images.unsplash.com/photo-1556740741-8c5b8a5d8b7a?w=200',
-        'https://images.unsplash.com/photo-1556740738-b6a2e2c9b9a0?w=200'
-      ],
-      longDescription: 'Créez votre boutique en ligne professionnelle avec notre solution clé en main. Inclut design personnalisé, gestion des stocks, paiements sécurisés et support 24/7.'
-    },
-    'Pack Marketing': {
-      mainImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600',
-      thumbnails: [
-        'https://images.unsplash.com/photo-1557838923-2985c318be48?w=200',
-        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200',
-        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200'
-      ],
-      longDescription: 'Boostez votre visibilité avec notre pack marketing complet : campagnes Google Ads, SEO, email marketing et réseaux sociaux. Analyse des performances et reporting mensuel.'
-    },
-    'Audit SEO': {
-      mainImage: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600',
-      thumbnails: [
-        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200',
-        'https://images.unsplash.com/photo-1554224154-3915f5f6d6b3?w=200',
-        'https://images.unsplash.com/photo-1556741533-411cf82e4e9d?w=200'
-      ],
-      longDescription: 'Audit technique et sémantique complet de votre site. Analyse des backlinks, suggestions d\'optimisation et plan d\'action priorisé pour améliorer votre classement Google.'
-    }
-  };
 
-  // État du panier
-  cart: Product[] = [];
+  articles: Article[] = [];
+  loadingArticles = true;
+
+  cart: CartItem[] = [];
   cartOpen = false;
-  removingIndex = -1; // Nouveau : index de l'article en suppression
+  removingIndex = -1;
   showProductModal = false;
   showPaymentModal = false;
 
-  // Données du produit actuel
   currentProductName = '';
   currentProductPrice = 0;
   currentProductImage = '';
@@ -77,25 +43,29 @@ export class ClientComponent implements OnInit {
   currentProductDescription = '';
   quantity = 1;
 
-  // Données du formulaire de paiement
   paymentForm: PaymentFormData = {
-    name: '',
-    email: '',
-    address: '',
-    card: '',
-    expiry: '',
-    cvv: ''
+    name: '', email: '', address: '', card: '', expiry: '', cvv: ''
   };
 
-  constructor() {
+  constructor(private articleService: ArticleService) {
     this.loadCartFromStorage();
   }
 
   ngOnInit() {
-    // Initialiser le panier depuis localStorage
+    this.articleService.getAllArticles(1, 100).subscribe({
+      next: (res) => {
+        this.articles = res.data || res;
+        this.loadingArticles = false;
+      },
+      error: () => { this.loadingArticles = false; }
+    });
   }
 
-  // ========== GESTION DU PANIER ==========
+  getArticleMainImage(article: Article): string {
+    return article.photo && article.photo.length > 0 ? article.photo[0] : 'https://via.placeholder.com/400x300?text=No+Image';
+  }
+
+  // ========== PANIER ==========
 
   loadCartFromStorage() {
     const savedCart = localStorage.getItem('cart');
@@ -122,11 +92,7 @@ export class ClientComponent implements OnInit {
 
   toggleCart() {
     this.cartOpen = !this.cartOpen;
-    if (this.cartOpen) {
-      document.body.classList.add('drawer-open');
-    } else {
-      document.body.classList.remove('drawer-open');
-    }
+    document.body.classList.toggle('drawer-open', this.cartOpen);
   }
 
   decrementCartItem(index: number) {
@@ -144,10 +110,7 @@ export class ClientComponent implements OnInit {
   }
 
   removeCartItem(index: number) {
-    // Marquer l'article comme en suppression pour l'animation
     this.removingIndex = index;
-
-    // Attendre la fin de l'animation (300ms) avant de supprimer réellement
     setTimeout(() => {
       this.cart.splice(index, 1);
       this.removingIndex = -1;
@@ -157,20 +120,24 @@ export class ClientComponent implements OnInit {
 
   // ========== MODAL PRODUIT ==========
 
-  openProductModal(name: string, price: number) {
-    const details = this.productDetails[name] || {
-      mainImage: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600',
-      thumbnails: [],
-      longDescription: 'Description non disponible.'
-    };
-
+  openProductModal(name: string, price: number, image: string, thumbnails: string[], description: string) {
     this.currentProductName = name;
     this.currentProductPrice = price;
-    this.currentProductImage = details.mainImage;
-    this.currentProductThumbnails = details.thumbnails;
-    this.currentProductDescription = details.longDescription;
+    this.currentProductImage = image;
+    this.currentProductThumbnails = thumbnails;
+    this.currentProductDescription = description;
     this.quantity = 1;
     this.showProductModal = true;
+  }
+
+  openArticleModal(article: Article) {
+    this.openProductModal(
+      article.nom_article,
+      article.prix,
+      this.getArticleMainImage(article),
+      article.photo || [],
+      article.description
+    );
   }
 
   closeProductModal() {
@@ -178,20 +145,15 @@ export class ClientComponent implements OnInit {
   }
 
   selectThumbnail(index: number, thumb: string) {
-    // Remplacer w=200 par w=600 pour avoir une image haute résolution
-    this.currentProductImage = thumb.replace('w=200', 'w=600');
+    this.currentProductImage = thumb;
   }
 
   decrementQuantity() {
-    if (this.quantity > 1) {
-      this.quantity--;
-    }
+    if (this.quantity > 1) this.quantity--;
   }
 
   incrementQuantity() {
-    if (this.quantity < 99) {
-      this.quantity++;
-    }
+    if (this.quantity < 99) this.quantity++;
   }
 
   addToCart() {
@@ -212,10 +174,7 @@ export class ClientComponent implements OnInit {
   // ========== MODAL PAIEMENT ==========
 
   openPaymentModal() {
-    if (this.cart.length === 0) {
-      alert('Votre panier est vide.');
-      return;
-    }
+    if (this.cart.length === 0) { alert('Votre panier est vide.'); return; }
     this.cartOpen = false;
     document.body.classList.remove('drawer-open');
     this.showPaymentModal = true;
@@ -223,35 +182,18 @@ export class ClientComponent implements OnInit {
 
   closePaymentModal() {
     this.showPaymentModal = false;
-    document.body.classList.remove('drawer-open');
   }
 
   submitPayment() {
-    // Validation simple
-    if (!this.paymentForm.name || !this.paymentForm.email || !this.paymentForm.address ||
-        !this.paymentForm.card || !this.paymentForm.expiry || !this.paymentForm.cvv) {
+    const f = this.paymentForm;
+    if (!f.name || !f.email || !f.address || !f.card || !f.expiry || !f.cvv) {
       alert('Veuillez remplir tous les champs.');
       return;
     }
-
-    // Simuler le paiement
     alert('Paiement effectué avec succès ! Merci pour votre commande.');
-
-    // Vider le panier
     this.cart = [];
     this.saveCartToStorage();
-
-    // Réinitialiser le formulaire
-    this.paymentForm = {
-      name: '',
-      email: '',
-      address: '',
-      card: '',
-      expiry: '',
-      cvv: ''
-    };
-
+    this.paymentForm = { name: '', email: '', address: '', card: '', expiry: '', cvv: '' };
     this.closePaymentModal();
   }
 }
-

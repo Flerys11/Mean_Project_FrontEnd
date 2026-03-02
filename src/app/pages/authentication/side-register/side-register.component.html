@@ -3,11 +3,11 @@
     <div class="position-relative shaper-wrapper">
       <div class="w-100 position-relative rounded bg-white auth-card">
         <div class="auth-body">
-          
+
           <a [routerLink]="['/dashboards/dashboard1']" class="m-t-20 d-flex">
             <img src="./assets/images/logos/dark-logo.svg" class="align-middle m-2" alt="logo" />
           </a>
-          
+
           <div class="row">
             <div class="col-lg-6">
               <div class="align-items-center justify-content-center d-none d-lg-flex">
@@ -44,56 +44,73 @@
 
                     <div class="or-border m-t-30">or sign up with</div>
 
-                    <form class="m-t-30" [formGroup]="form" (ngSubmit)="submit()">
-                      <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Name</mat-label>
-                      <mat-form-field appearance="outline" class="w-100" color="primary">
-                        <input matInput formControlName="uname" />
-                        @if(f['uname'].touched && f['uname'].invalid) {
-                        <mat-hint class="m-b-16 error-msg">
-                          @if( f['uname'].errors &&
-                          f['uname'].errors['required']) {
-                          <div class="text-error">Name is required.</div>
-                          } @if(f['uname'].errors &&
-                          f['uname'].errors['minlength']) {
-                          <div class="text-error">
-                            Name should be 6 character.
-                          </div>
-                          }
-                        </mat-hint>
-                        }
-                      </mat-form-field>
-                      <!-- email -->
-                      <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Email Address</mat-label>
-                      <mat-form-field appearance="outline" class="w-100" color="primary">
-                        <input matInput type="email" formControlName="email" />
-                        @if(f['email'].touched && f['email'].invalid) {
-                        <mat-hint class="m-b-16 error-msg">
-                          @if(f['email'].errors &&
-                          f['email'].errors['required']) {
-                          <div class="text-error">Email is required.</div>
-                          }
-                        </mat-hint>
-                        }
-                      </mat-form-field>
-                      <!-- password -->
-                      <mat-label class="mat-subtitle-2 f-s-14 f-w-600 m-b-12 d-block">Password</mat-label>
-                      <mat-form-field appearance="outline" class="w-100" color="primary">
-                        <input matInput type="password" formControlName="password" />
-                        @if(f['password'].touched && f['password'].invalid) {
-                        <mat-hint class="m-b-16 error-msg">
-                          @if(f['password'].errors &&
-                          f['password'].errors['required']) {
-                          <div class="text-error">Password is required.</div>
-                          }
-                        </mat-hint>
-                        }
-                      </mat-form-field>
+                    <div class="container d-flex justify-content-center align-items-center vh-100">
 
-                      <button mat-flat-button color="primary" class="w-100" [disabled]="!form.valid">
-                        Sign Up
-                      </button>
-                      <!-- input -->
-                    </form>
+                      <mat-card style="width: 450px; padding: 20px;">
+
+                        <h2 class="text-center mb-4">Inscription</h2>
+
+                        <form [formGroup]="form" (ngSubmit)="submit()">
+
+                          <!-- Nom boutique -->
+                          <mat-form-field appearance="outline" class="w-100 m-b-16">
+                            <mat-label>Choisir une boutique</mat-label>
+                            <mat-select formControlName="nom_boutique">
+
+                              <mat-option *ngFor="let boutique of boutiques"
+                                          [value]="boutique.nom">
+                                {{ boutique.nom }}
+                              </mat-option>
+
+                            </mat-select>
+                          </mat-form-field>
+
+                          <mat-form-field appearance="outline" class="w-100 m-b-16">
+                            <mat-label>Type de boutique</mat-label>
+                            <mat-select formControlName="type_boutique">
+                              <mat-option [value]="1">Physique</mat-option>
+                              <mat-option [value]="2">En ligne</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+
+                          <!-- Email -->
+                          <mat-form-field appearance="outline" class="w-100 mb-3">
+                            <mat-label>Email</mat-label>
+                            <input matInput type="email" formControlName="email">
+                          </mat-form-field>
+
+                          <!-- Mot de passe -->
+                          <mat-form-field appearance="outline" class="w-100 mb-3">
+                            <mat-label>Mot de passe</mat-label>
+                            <input matInput type="password" formControlName="mot_de_passe">
+                          </mat-form-field>
+
+                          <!-- Contact -->
+                          <mat-form-field appearance="outline" class="w-100 mb-3">
+                            <mat-label>Contact (10 chiffres)</mat-label>
+                            <input matInput formControlName="contact">
+                          </mat-form-field>
+
+                          <!-- Erreur -->
+                          <div *ngIf="errorMessage" class="text-danger mb-3">
+                            {{ errorMessage }}
+                          </div>
+
+                          <!-- Bouton -->
+                          <button mat-raised-button
+                                  color="primary"
+                                  class="w-100"
+                                  [disabled]="loading">
+
+                            {{ loading ? 'Inscription...' : 'S’inscrire' }}
+
+                          </button>
+
+                        </form>
+
+                      </mat-card>
+
+                    </div>
                     <span class="d-block f-w-500 d-block m-t-24">Already have an Account?
 
                       <a [routerLink]="['/authentication/login']"

@@ -70,7 +70,7 @@
           <p class="text-muted">Prix unitaire : <span>{{ currentProductPrice }}</span> Ar</p>
           <p class="description mt-2">{{ currentProductDescription }}</p>
           <div class="mb-4">
-            <label for="quantity" class="form-label">Quantité</label>
+            <label  class="form-label">Quantité</label>
             <div class="input-group" style="width: 140px;">
               <button class="btn btn-outline-secondary" (click)="decrementQuantity()">−</button>
               <input type="number" [(ngModel)]="quantity" class="cart-item-quantity" min="1" max="99">
@@ -114,28 +114,28 @@
           <h6 class="mb-3">Informations de paiement</h6>
           <form (ngSubmit)="submitPayment()">
             <div class="mb-3">
-              <label for="name" class="form-label">Nom complet</label>
+              <label  class="form-label">Nom complet</label>
               <input type="text" class="form-control" [(ngModel)]="paymentForm.name" name="name" required>
             </div>
             <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
+              <label  class="form-label">Email</label>
               <input type="email" class="form-control" [(ngModel)]="paymentForm.email" name="email" required>
             </div>
             <div class="mb-3">
-              <label for="address" class="form-label">Adresse de livraison</label>
+              <label  class="form-label">Adresse de livraison</label>
               <textarea class="form-control" [(ngModel)]="paymentForm.address" name="address" rows="2" required></textarea>
             </div>
             <div class="mb-3">
-              <label for="card" class="form-label">Numéro de carte</label>
+              <label  class="form-label">Numéro de carte</label>
               <input type="text" class="form-control" [(ngModel)]="paymentForm.card" name="card" placeholder="**** **** **** ****" required>
             </div>
             <div class="row">
               <div class="col-6 mb-3">
-                <label for="expiry" class="form-label">Expiration</label>
+                <label  class="form-label">Expiration</label>
                 <input type="text" class="form-control" [(ngModel)]="paymentForm.expiry" name="expiry" placeholder="MM/AA" required>
               </div>
               <div class="col-6 mb-3">
-                <label for="cvv" class="form-label">CVV</label>
+                <label  class="form-label">CVV</label>
                 <input type="text" class="form-control" [(ngModel)]="paymentForm.cvv" name="cvv" placeholder="123" required>
               </div>
             </div>
@@ -155,70 +155,42 @@
   </div>
 </section>
 
-<!-- ================= PRODUITS ================= -->
+
+<!-- ================= PRODUITS  ================= -->
 <section class="py-5 bg-light">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="fw-bold display-5">Nos Produits</h2>
+      <h2 class="fw-bold display-5">Nos Articles</h2>
       <p class="text-muted fs-4">Des solutions puissantes pour accélérer votre business</p>
     </div>
 
-    <div class="row g-4">
-      <!-- PRODUIT 1 -->
-      <div class="col-md-4">
+    <!-- Loading -->
+    <div *ngIf="loadingArticles" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <!-- Liste articles -->
+    <div class="row g-4" *ngIf="!loadingArticles">
+      <div class="col-md-4" *ngFor="let article of articles">
         <div class="product-card">
           <div class="product-img">
-            <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&auto=format" class="img-fluid" alt="Boutique Premium">
+            <img [src]="getArticleMainImage(article)" class="img-fluid" [alt]="article.nom_article">
             <div class="overlay">
-              <button class="btn btn-gradient view-details" (click)="openProductModal('Boutique Premium', 1499)">
+              <button class="btn btn-gradient view-details" (click)="openArticleModal(article)">
                 Voir détail 👁️
               </button>
             </div>
           </div>
           <div class="p-3">
-            <h5>Boutique Premium</h5>
-            <p class="description">Solution clé en main pour lancer votre boutique en ligne.</p>
-            <h6 class="fw-bold">1499€</h6>
+            <h5>{{ article.nom_article }}</h5>
+            <p class="description">{{ article.description }}</p>
+            <h6 class="fw-bold">{{ article.prix }} Ar</h6>
           </div>
         </div>
       </div>
 
-      <!-- PRODUIT 2 -->
-      <div class="col-md-4">
-        <div class="product-card">
-          <div class="product-img">
-            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format" class="img-fluid" alt="Pack Marketing">
-            <div class="overlay">
-              <button class="btn btn-gradient view-details" (click)="openProductModal('Pack Marketing', 799)">
-                Voir détail 👁️
-              </button>
-            </div>
-          </div>
-          <div class="p-3">
-            <h5>Pack Marketing</h5>
-            <p class="description">Stratégies marketing avancées pour booster vos ventes.</p>
-            <h6 class="fw-bold">799€</h6>
-          </div>
-        </div>
-      </div>
-
-      <!-- PRODUIT 3 -->
-      <div class="col-md-4">
-        <div class="product-card">
-          <div class="product-img">
-            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&auto=format" class="img-fluid" alt="Audit SEO">
-            <div class="overlay">
-              <button class="btn btn-gradient view-details" (click)="openProductModal('Audit SEO', 499)">
-                Voir détail 👁️
-              </button>
-            </div>
-          </div>
-          <div class="p-3">
-            <h5>Audit SEO</h5>
-            <p class="description">Analyse complète et recommandations pour votre référencement.</p>
-            <h6 class="fw-bold">499€</h6>
-          </div>
-        </div>
+      <div *ngIf="articles.length === 0" class="text-center text-muted py-5">
+        Aucun article disponible.
       </div>
     </div>
   </div>
