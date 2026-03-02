@@ -1,0 +1,65 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <mat-icon color="primary">category</mat-icon>
+        <div>
+          <h4 class="m-0 fw-semibold">Catégories</h4>
+          <span class="text-muted">
+        Gérer les catégories utilisées pour classer les articles
+      </span>
+        </div>
+      </div>
+
+      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon>
+        Nouvelle catégorie
+      </button>
+    </div>
+    <br>
+
+    <table mat-table [dataSource]="dataSource" class="w-100">
+
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef> Nom </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.nom }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="valeur">
+        <th mat-header-cell *matHeaderCellDef> Valeur </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.valeur }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(element)">
+              <mat-icon>edit</mat-icon>
+              <span>Éditer</span>
+            </button>
+            <button mat-menu-item (click)="deleteCategorie(element._id)">
+              <mat-icon>delete</mat-icon>
+              <span>Supprimer</span>
+            </button>
+          </mat-menu>
+
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    </table>
+
+  </mat-card-content>
+</mat-card>
