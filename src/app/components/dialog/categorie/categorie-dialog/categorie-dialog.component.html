@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>
+  {{ data ? 'Modifier' : 'Créer' }} une catégorie
+</h2>
+
+<form [formGroup]="form" mat-dialog-content>
+
+  <mat-form-field class="w-100">
+    <mat-label>Nom</mat-label>
+    <input matInput formControlName="nom" />
+    <mat-error *ngIf="form.get('nom')?.invalid">
+      Nom requis
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Valeur</mat-label>
+    <input matInput type="number" formControlName="valeur" />
+    <mat-error *ngIf="form.get('valeur')?.invalid">
+      Valeur invalide
+    </mat-error>
+  </mat-form-field>
+
+</form>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Annuler</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="save()"
+    [disabled]="form.invalid">
+    Enregistrer
+  </button>
+</mat-dialog-actions>

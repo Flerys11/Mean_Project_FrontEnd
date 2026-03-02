@@ -1,113 +1,78 @@
-import { Component, ViewChild } from '@angular/core';
-import { TablerIconsModule } from 'angular-tabler-icons';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { ChartComponent, NgApexchartsModule } from 'ng-apexcharts';
 import { MaterialModule } from 'src/app/material.module';
+import { TablerIconsModule } from 'angular-tabler-icons';
 import { MatButtonModule } from '@angular/material/button';
-
-import {
-  ApexChart,
-  ChartComponent,
-  ApexDataLabels,
-  ApexLegend,
-  ApexStroke,
-  ApexTooltip,
-  ApexAxisChartSeries,
-  ApexXAxis,
-  ApexYAxis,
-  ApexGrid,
-  ApexPlotOptions,
-  ApexFill,
-  ApexMarkers,
-  ApexResponsive,
-  NgApexchartsModule,
-} from 'ng-apexcharts';
-
-export interface trafficdistributionChart {
-  series: ApexAxisChartSeries;
-  chart: ApexChart;
-  dataLabels: ApexDataLabels;
-  plotOptions: ApexPlotOptions;
-  yaxis: ApexYAxis;
-  xaxis: ApexXAxis;
-  fill: ApexFill;
-  tooltip: ApexTooltip;
-  stroke: ApexStroke;
-  legend: ApexLegend;
-  grid: ApexGrid;
-  marker: ApexMarkers;
-}
+import {StatCommandeService} from "../../services/stat/stat.service";
+import {DecimalPipe} from "@angular/common";
 
 @Component({
   selector: 'app-traffic-distribution',
   standalone: true,
-  imports: [MaterialModule, TablerIconsModule, MatButtonModule, NgApexchartsModule],
+  imports: [MaterialModule, TablerIconsModule, MatButtonModule, NgApexchartsModule, DecimalPipe],
   templateUrl: './traffic-distribution.component.html',
 })
-export class AppTrafficDistributionComponent {
+export class AppTrafficDistributionComponent implements OnInit {
 
-  @ViewChild('chart') chart: ChartComponent = Object.create(null);
+  @ViewChild('chart') chart!: ChartComponent;
 
-  public trafficdistributionChart!: Partial<trafficdistributionChart> | any;
+  public trafficdistributionChart: any;
 
+  chiffreAffaireJour = 0;
+  totalCommandesJour = 0;
+  dernierJour!: string;
 
-  constructor() {
+  constructor(private statService: StatCommandeService) {}
 
+  ngOnInit(): void {
+    this.loadDernierJour();
+  }
+
+  loadDernierJour() {
+    this.statService.getStats('jour').subscribe({
+      next: (res) => {
+        const stats = res.data || [];
+        if (!stats.length) return;
+
+        const last = stats[stats.length - 1];
+
+        this.dernierJour = last._id;
+        this.chiffreAffaireJour = last.chiffreAffaire;
+        this.totalCommandesJour = last.totalCommandes;
+
+        this.initChart();
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  initChart() {
     this.trafficdistributionChart = {
-      series: [5368, 3500, 4106],
-      labels: ['5368', 'Refferal Traffic', 'Oragnic Traffic'],
+      series: [
+        this.totalCommandesJour,
+        this.chiffreAffaireJour,
+      ],
+      labels: [
+        'Commandes',
+        'Chiffre d’affaires',
+      ],
       chart: {
         type: 'donut',
-        fontFamily: "'Plus Jakarta Sans', sans-serif;",
-        foreColor: '#adb0bb',
-        toolbar: {
-          show: false,
-        },
         height: 160,
+        toolbar: { show: false },
       },
-      colors: ['#e7ecf0', '#fb977d', '#0085db'],
+      colors: ['#0085db', '#fb977d'],
       plotOptions: {
         pie: {
           donut: {
             size: '80%',
-            background: 'none',
-            labels: {
-              show: true,
-              name: {
-                show: true,
-                fontSize: '12px',
-                color: undefined,
-                offsetY: 5,
-              },
-              value: {
-                show: false,
-                color: '#98aab4',
-              },
-            },
           },
         },
       },
-      stroke: {
-        show: false,
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      legend: {
-        show: false,
-      },
-      responsive: [
-        {
-          breakpoint: 991,
-          options: {
-            chart: {
-              width: 120,
-            },
-          },
-        },
-      ],
-      tooltip: {
-        enabled: false,
-      },
+      stroke: { show: false },
+      dataLabels: { enabled: false },
+      legend: { show: false },
+      tooltip: { enabled: true },
     };
-
   }
 }

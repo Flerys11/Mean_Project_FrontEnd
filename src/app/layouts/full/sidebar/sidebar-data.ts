@@ -15,22 +15,22 @@ export const navItems: NavItem[] = [
   },
 
   {
-    displayName: 'Forms',
-    iconName: 'rosette',
-    bgcolor: 'accent',
-    route: '/ui-components/forms',
-  },
-  {
-    displayName: 'Tables',
+    displayName: 'Articles',
     iconName: 'poker-chip',
     bgcolor: 'warning',
     route: '/ui-components/tables',
   },
   {
-    displayName: 'Lists',
+    displayName: 'Commandes',
     iconName: 'list',
     bgcolor: 'success',
-    route: '/ui-components/lists',
+    route: '/ui-components/commande',
+  },
+  {
+    displayName: 'Categories',
+    iconName: 'list',
+    bgcolor: 'success',
+    route: '/ui-components/categorie',
   },
 
 ];
