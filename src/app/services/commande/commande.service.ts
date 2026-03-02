@@ -44,4 +44,9 @@ export class CommandeService {
   annulerCommande(id: string): Observable<any> {
     return this.http.put(this.url(`/status/${id}`), { status: 'annule' });
   }
+
+  create(data: any): Observable<any> {
+    return this.http.post(this.url(''), data);
+  }
+
 }

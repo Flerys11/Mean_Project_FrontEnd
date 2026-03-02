@@ -7,7 +7,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Dashboard',
     iconName: 'layout-dashboard',
-    bgcolor: 'primary',
+    bgcolor: 'accent',
     route: '/dashboard',
   },
   {
@@ -23,26 +23,26 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Boutiques',
     iconName: 'list',
-    bgcolor: 'warning',
+    bgcolor: 'primary',
     route: '/ui-components/boutiques',
   },
   {
     displayName: 'Articles',
     iconName: 'list',
-    bgcolor: 'warning',
+    bgcolor: 'success',
     route: '/ui-components/articles',
   },
   {
     displayName: 'Commandes',
     iconName: 'list',
-    bgcolor: 'success',
+    bgcolor: 'primary',
     route: '/ui-components/commande',
   },
   {
     displayName: 'Categories',
     iconName: 'list',
     bgcolor: 'success',
-    route: '/ui-components/lists',
+    route: '/ui-components/categorie',
   },
 
 ];
