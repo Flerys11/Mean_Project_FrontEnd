@@ -6,7 +6,9 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 })
 export class ApiService {
   //url backend
-  ip: string = 'http://localhost:3000/';
+  // ip: string = 'http://localhost:3000/';
+
+  ip: string = 'https://mean-backend-hjc6.onrender.com/';
 
   //login
   loginUrl = 'auth/login';
