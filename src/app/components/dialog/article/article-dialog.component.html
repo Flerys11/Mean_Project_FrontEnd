@@ -1,0 +1,104 @@
+<h2 mat-dialog-title class="dialog-title">{{ data.title }}</h2>
+
+<mat-dialog-content class="compact-dialog">
+  <mat-tab-group class="compact-tabs" animationDuration="0ms">
+    <mat-tab label="Informations">
+      <div class="tab-content compact-form">
+        <form [formGroup]="articleForm">
+          <mat-form-field appearance="outline" class="compact-field">
+            <mat-label>Nom article</mat-label>
+            <input matInput formControlName="nom_article">
+            <mat-error *ngIf="articleForm.get('nom_article')?.hasError('required')">
+              Requis
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="compact-field half-width">
+              <mat-label>Prix (Ar)</mat-label>
+              <input matInput type="number" formControlName="prix">
+              <mat-error *ngIf="articleForm.get('prix')?.hasError('required')">
+                Requis
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="compact-field half-width">
+              <mat-label>Catégorie</mat-label>
+              <mat-select formControlName="id_categorie">
+                <mat-option *ngFor="let cat of categories" [value]="cat._id">
+                  {{ cat.nom_categorie || cat.nom }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="articleForm.get('id_categorie')?.hasError('required')">
+                Requis
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="compact-field">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="2"></textarea>
+            <mat-error *ngIf="articleForm.get('description')?.hasError('required')">
+              Requis
+            </mat-error>
+          </mat-form-field>
+        </form>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Photos">
+      <div class="tab-content compact-photos">
+        <div class="photo-header">
+          <button mat-stroked-button color="primary" size="small" (click)="openFileSelector()" class="compact-upload-btn">
+            <mat-icon>add_photo_alternate</mat-icon>
+            Ajouter
+          </button>
+          <input #fileInput type="file" multiple accept="image/*" style="display: none" (change)="onFileSelected($event)">
+          <span class="photo-count" *ngIf="photos.length > 0">{{ photos.length }} photo(s)</span>
+        </div>
+
+        <div class="photo-grid" *ngIf="photos.length > 0">
+          <div *ngFor="let photo of photos; let i = index" class="photo-item">
+            <div class="photo-wrapper">
+              <img [src]="getPhotoUrl(photo)" alt="Photo" class="photo-thumb">
+              <button class="photo-remove" (click)="removePhoto(i); $event.stopPropagation()" matTooltip="Supprimer">
+                <mat-icon>close</mat-icon>
+              </button>
+              <span class="photo-badge" *ngIf="isNewPhoto(photo)">Nouveau</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-photos-compact" *ngIf="photos.length === 0">
+          <mat-icon class="photo-icon">photo</mat-icon>
+          <p>Aucune photo</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Aperçu" *ngIf="articleForm.valid">
+      <div class="tab-content compact-preview">
+        <div class="preview-card-compact">
+          <div class="preview-image" *ngIf="photos.length > 0">
+            <img [src]="getPhotoUrl(photos[0])" alt="Aperçu">
+            <span class="preview-badge">{{ photos.length }} photo(s)</span>
+          </div>
+          <div class="preview-info">
+            <h4>{{ articleForm.get('nom_article')?.value || 'Article' }}</h4>
+            <p class="preview-price">{{ articleForm.get('prix')?.value || '0' }} Ar</p>
+            <p class="preview-desc">{{ (articleForm.get('description')?.value || '').substring(0, 50) }}...</p>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions-compact">
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary"
+          [disabled]="articleForm.invalid"
+          (click)="onSubmit()">
+    {{ data.values ? 'Modifier' : 'Ajouter' }}
+  </button>
+</mat-dialog-actions>

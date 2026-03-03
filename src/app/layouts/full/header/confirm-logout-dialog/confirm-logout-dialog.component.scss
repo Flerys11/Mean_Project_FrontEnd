@@ -1,0 +1,12 @@
+/* Styles pour le dialog de confirmation de déconnexion */
+:host ::ng-deep {
+  .mat-mdc-dialog-container {
+    background-color: rgba(20, 30, 35, 0.98);
+    color: white;
+  }
+
+  .mat-mdc-dialog-content {
+    color: #c61a1a;
+  }
+}
+

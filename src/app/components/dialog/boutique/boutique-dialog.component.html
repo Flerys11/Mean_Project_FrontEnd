@@ -1,0 +1,87 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="boutiqueForm" class="form-container">
+    <!-- Champ Nom -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nom de la boutique</mat-label>
+      <input matInput formControlName="nom" placeholder="Ex: Boutique Centrale">
+      <mat-error *ngIf="boutiqueForm.get('nom')?.hasError('required')">
+        Le nom est requis
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Champ Prix Loyer -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Prix du loyer</mat-label>
+      <input matInput type="number" formControlName="prix_loyer">
+      <mat-error *ngIf="boutiqueForm.get('prix_loyer')?.hasError('required')">
+        Le prix du loyer est requis
+      </mat-error>
+      <mat-error *ngIf="boutiqueForm.get('prix_loyer')?.hasError('min')">
+        Le prix doit être supérieur à 0
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Statut de validation</mat-label>
+      <mat-select formControlName="validate" panelClass="boutique-select-panel">
+        <mat-select-trigger>
+          <div class="select-trigger">
+            <span class="status-indicator"
+                  [ngClass]="{'status-valid': boutiqueForm.get('validate')?.value === true,
+                             'status-invalid': boutiqueForm.get('validate')?.value === false}">
+            </span>
+            <span>{{ getStatusLabel(boutiqueForm.get('validate')?.value) }}</span>
+          </div>
+        </mat-select-trigger>
+
+        <mat-option [value]="false" class="status-option">
+          <div class="option-content">
+            <span class="status-indicator status-invalid"></span>
+            <span class="option-label">Non validé</span>
+            <span class="option-description">Boutique en attente de validation</span>
+          </div>
+        </mat-option>
+
+        <mat-option [value]="true" class="status-option">
+          <div class="option-content">
+            <span class="status-indicator status-valid"></span>
+            <span class="option-label">Validé</span>
+            <span class="option-description">Boutique approuvée et active</span>
+          </div>
+        </mat-option>
+      </mat-select>
+
+      <mat-icon matSuffix [color]="boutiqueForm.get('validate')?.value ? 'primary' : 'warn'">
+        {{ boutiqueForm.get('validate')?.value ? 'check_circle' : 'pending' }}
+      </mat-icon>
+
+      <mat-hint>Sélectionnez le statut de validation de la boutique</mat-hint>
+    </mat-form-field>
+
+    <!-- Aperçu en temps réel -->
+    <div class="preview-section" *ngIf="boutiqueForm.dirty">
+      <h3>Aperçu</h3>
+      <div class="preview-card">
+        <div class="preview-header" [ngClass]="{'preview-valid': boutiqueForm.get('validate')?.value,
+                                                'preview-invalid': !boutiqueForm.get('validate')?.value}">
+          <span class="preview-title">{{ boutiqueForm.get('nom')?.value || 'Nom de la boutique' }}</span>
+          <span class="preview-badge">{{ boutiqueForm.get('validate')?.value ? '✓ Validé' : '⏳ En attente' }}</span>
+        </div>
+        <div class="preview-body">
+          <span class="preview-price">{{ boutiqueForm.get('prix_loyer')?.value || '0' }} </span>
+        </div>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Annuler</button>
+  <button mat-raised-button color="primary"
+          [disabled]="boutiqueForm.invalid"
+          (click)="onSubmit()">
+    {{ data.title === 'Ajouter Boutique' ? 'Ajouter' : 'Modifier' }}
+  </button>
+</mat-dialog-actions>

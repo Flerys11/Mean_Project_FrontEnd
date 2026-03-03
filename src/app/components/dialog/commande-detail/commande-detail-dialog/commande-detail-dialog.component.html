@@ -1,0 +1,57 @@
+<h2 mat-dialog-title>
+  <mat-icon>receipt_long</mat-icon>
+  Détails de la commande
+</h2>
+
+<div mat-dialog-content>
+
+  <div class="mb-3">
+    <strong>Client :</strong> {{ commande.nom_client }} <br>
+    <strong>Contact :</strong> {{ commande.contact_client }} <br>
+    <strong>Adresse :</strong> {{ commande.adresse_client }}
+  </div>
+
+  <table mat-table [dataSource]="commande.articles" class="w-100">
+
+    <ng-container matColumnDef="article">
+      <th mat-header-cell *matHeaderCellDef> Article </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.article.nom_article }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="prix">
+      <th mat-header-cell *matHeaderCellDef> Prix </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.article.prix | number:'1.0-2' }} Ar
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="quantite">
+      <th mat-header-cell *matHeaderCellDef> Qté </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.quantite }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+      <th mat-header-cell *matHeaderCellDef> Total </th>
+      <td mat-cell *matCellDef="let element">
+        {{ getTotalArticle(element) | number:'1.0-2' }} Ar
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+  </table>
+
+  <div class="total-commande">
+    Total commande : {{ getTotalCommande() | number:'1.0-2' }} Ar
+  </div>
+
+</div>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Fermer</button>
+</mat-dialog-actions>
