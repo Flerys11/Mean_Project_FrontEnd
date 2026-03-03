@@ -11,6 +11,9 @@ import { MaterialModule } from '../../../material.module';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {finalize} from "rxjs";
+import {LastRouteService} from "../../../services/last-route.service";
 
 @Component({
   selector: 'app-side-login',
@@ -22,21 +25,24 @@ import { CommonModule } from '@angular/common';
     ReactiveFormsModule,
     MatButtonModule,
     CommonModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './side-login.component.html',
+  styleUrl: 'side-login-component.scss'
 })
 export class AppSideLoginComponent {
   isLoading = false;
   errorMessage = '';
 
   form = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    mot_de_passe: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    email: new FormControl('boutique1@gmail.com', [Validators.required, Validators.email]),
+    mot_de_passe: new FormControl('mdpboutique1', [Validators.required, Validators.minLength(6)]),
   });
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private lastRouteService : LastRouteService,
   ) { }
 
   get f() {
@@ -54,17 +60,35 @@ export class AppSideLoginComponent {
 
     const { email, mot_de_passe } = this.form.value;
 
-    this.authService.login(email!, mot_de_passe!).subscribe({
-      next: (authData) => {
-        // console.log('Authentification réussie:', authData);
-        this.isLoading = false;
-        this.router.navigate(['/dashboard']);
-      },
-      error: (error) => {
-        console.error('Erreur d\'authentification:', error);
-        this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Erreur de connexion. Vérifiez vos identifiants.';
-      }
-    });
+    this.authService.login(email!, mot_de_passe!)
+      .pipe(
+        finalize(() => this.isLoading = false)
+      )
+      .subscribe({
+        next: () => {
+
+          const stored = localStorage.getItem('authData');
+
+          if (!stored) {
+            this.router.navigate(['/authentication/login']);
+            return;
+          }
+
+          const role = JSON.parse(stored).role;
+
+          if (role === 'ADMIN') {
+            this.router.navigate(['/ui-components/boutiques']);
+          } else if (role === 'USER') {
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.router.navigate(['/']);
+          }
+        },
+        error: (error) => {
+          this.errorMessage =
+            error.error?.message ||
+            'Erreur de connexion. Vérifiez vos identifiants.';
+        }
+      });
   }
 }

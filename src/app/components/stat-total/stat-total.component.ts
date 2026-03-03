@@ -3,6 +3,7 @@ import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
 import { MaterialModule } from 'src/app/material.module';
 import { MatButtonModule } from '@angular/material/button';
 import {StatCommande, StatCommandeService} from "../../services/stat/stat.service";
+import {CommonModule} from "@angular/common";
 
 export interface profitExpanceChart {
   series: any;
@@ -22,7 +23,7 @@ export interface profitExpanceChart {
 @Component({
   selector: 'app-stat-total',
   standalone: true,
-  imports: [MaterialModule, MatButtonModule, NgApexchartsModule],
+  imports: [MaterialModule, MatButtonModule, NgApexchartsModule, CommonModule],
   templateUrl: './stat-total.component.html',
 })
 export class AppProfitExpensesComponent implements OnInit {
@@ -33,16 +34,19 @@ export class AppProfitExpensesComponent implements OnInit {
 
   selectedType: 'jour' | 'mois' = 'jour';
   stats: StatCommande[] = [];
+  idBoutique: string = '';
 
   constructor(private statService: StatCommandeService) {}
 
   ngOnInit(): void {
-    this.loadStats(this.selectedType);
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    this.idBoutique = authData.id_boutique;
+    this.loadStats(this.selectedType, this.idBoutique);
     // this.initChart([], []);
   }
 
-  loadStats(type: 'jour' | 'mois') {
-    this.statService.getStats(type).subscribe({
+  loadStats(type: 'jour' | 'mois', idBoutique: string) {
+    this.statService.getStats(type,idBoutique).subscribe({
       next: (res) => {
         this.stats = res.data || [];
         const labels = this.stats.map(s => s._id);
@@ -83,6 +87,6 @@ export class AppProfitExpensesComponent implements OnInit {
 
   changeType(type: 'jour' | 'mois') {
     this.selectedType = type;
-    this.loadStats(type);
+    this.loadStats(type, this.idBoutique);
   }
 }

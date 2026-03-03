@@ -5,11 +5,12 @@ import { MaterialModule } from 'src/app/material.module';
 import { ArticleService } from 'src/app/services/article/article.service';
 import { CategorieService } from 'src/app/services/categorie/categorie.service';
 import { ArticleDialogComponent } from 'src/app/components/dialog/article/article-dialog.component';
+import {AjouterStockComponent} from "../dialog/ajouter-stock/ajouter-stock.component";
 
 @Component({
   standalone: true,
   selector: 'app-article',
-  imports: [CommonModule, MaterialModule, ArticleDialogComponent],
+  imports: [CommonModule, MaterialModule],
   templateUrl: './article.component.html'
 })
 export class ArticleComponent implements OnInit {
@@ -18,7 +19,7 @@ export class ArticleComponent implements OnInit {
   boutiques: any[] = [];
   categories: any[] = [];
 
-  displayedColumns = ['nom', 'prix', 'description', 'actions'];
+  displayedColumns = ['nom', 'prix', 'description','stock',  'actions'];
 
   constructor(
     private articleService: ArticleService,
@@ -34,8 +35,9 @@ export class ArticleComponent implements OnInit {
     const authData = JSON.parse(localStorage.getItem('authData') || '{}');
     const idBoutique = authData.id_boutique;
 
-    this.articleService.getArticlesByBoutique(idBoutique).subscribe((res: any) => {
+    this.articleService.getAllArticlesStock(idBoutique).subscribe((res: any) => {
       this.articles = Array.isArray(res) ? res : (res.docs || res.data || []);
+      console.log(res.data);
     });
 
 
@@ -97,5 +99,26 @@ export class ArticleComponent implements OnInit {
         error: (err) => console.error('Erreur lors de la suppression:', err)
       });
     }
+  }
+
+  openStockDialog(element: any) {
+    const dialogRef = this.dialog.open(AjouterStockComponent, {
+      width: '400px',
+      data: element
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log(result);
+        this.articleService.AddStock(result).subscribe({
+          next: () => {
+            this.loadAll();
+          },
+          error: (err) => {
+            console.error('Erreur lors de la création:', err);
+          }
+        });
+      }
+    });
   }
 }

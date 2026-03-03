@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import {ApiService} from "../api.service";
 
 export interface Article {
   _id: string;
@@ -17,16 +18,25 @@ export interface Article {
 })
 export class ArticleService {
 
-  private apiUrl = 'http://localhost:3000/article';
+  private base = 'article';
 
-  constructor(private http: HttpClient) {}
+
+  constructor(private http: HttpClient, private api: ApiService) {}
 
   getAllArticles(page: number = 1, limit: number = 10): Observable<any> {
-    return this.http.get(`${this.apiUrl}?page=${page}&limit=${limit}`);
+    return this.http.get(`${this.api.ip}${this.base}?page=${page}&limit=${limit}`);
+  }
+
+  getAllArticlesStock(id_boutique: string): Observable<any> {
+    return this.http.get(`${this.api.ip}stock/${id_boutique}`);
   }
 
   getArticlesByBoutique(id: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/boutique/${id}`);
+    return this.http.get(`${this.api.ip}${this.base}/boutique/${id}`);
+  }
+
+  AddStock(data: any) {
+    return this.http.post(this.api.ip + 'stock', data);
   }
 
   createArticle(article: Article): Observable<Article> {
@@ -34,7 +44,7 @@ export class ArticleService {
       ...article,
       photo: article.photo || []
     };
-    return this.http.post<Article>(this.apiUrl, articleData);
+    return this.http.post<Article>(this.api.ip + this.base, articleData);
   }
 
   updateArticle(id: string, article: Article): Observable<Article> {
@@ -42,12 +52,12 @@ export class ArticleService {
       ...article,
       photo: article.photo || []
     };
-    return this.http.put<Article>(`${this.apiUrl}/${id}`, articleData);
+    return this.http.put<Article>(`${this.api.ip}${this.base}/${id}`, articleData);
   }
 
 
   deleteArticle(id: string) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.api.ip}${this.base}/${id}`);
   }
 
   filesToBase64(files: FileList): Promise<string[]> {

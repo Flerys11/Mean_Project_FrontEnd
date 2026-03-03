@@ -52,7 +52,11 @@ export class CommandeComponent implements OnInit {
   }
 
   loadCommandes() {
-    this.commandeService.getAll().subscribe({
+
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    const idBoutique = authData.id_boutique;
+
+    this.commandeService.getAll(idBoutique).subscribe({
       next: (res: any) => {
         this.dataSource = res.data || res.docs || res || [];
       },

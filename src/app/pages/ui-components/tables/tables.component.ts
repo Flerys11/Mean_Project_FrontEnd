@@ -42,9 +42,12 @@ export class AppTablesComponent implements OnInit {
   }
 
   loadArticles() {
-    this.articleService.getAllArticles().subscribe({
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    const idBoutique = authData.id_boutique;
+    this.articleService.getAllArticlesStock(idBoutique).subscribe({
       next: (res) => {
         this.dataSource1 = res.data || res.docs || res;
+        console.log(this.dataSource1);
       },
       error: (err) => {
         console.error(err);

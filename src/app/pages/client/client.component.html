@@ -115,29 +115,25 @@
           <form (ngSubmit)="submitPayment()">
             <div class="mb-3">
               <label  class="form-label">Nom complet</label>
-              <input type="text" class="form-control" [(ngModel)]="paymentForm.name" name="name" required>
+              <input type="text" class="form-control" [(ngModel)]="paymentForm.nom" name="nom" required>
             </div>
             <div class="mb-3">
-              <label  class="form-label">Email</label>
-              <input type="email" class="form-control" [(ngModel)]="paymentForm.email" name="email" required>
+              <label  class="form-label">Contact</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="paymentForm.contact"
+                name="contact"
+                required
+                maxlength="10"
+                minlength="10"
+                pattern="^(032|033|034|038)\d{7}$"
+                placeholder="0341234567"
+              />
             </div>
             <div class="mb-3">
               <label  class="form-label">Adresse de livraison</label>
-              <textarea class="form-control" [(ngModel)]="paymentForm.address" name="address" rows="2" required></textarea>
-            </div>
-            <div class="mb-3">
-              <label  class="form-label">Numéro de carte</label>
-              <input type="text" class="form-control" [(ngModel)]="paymentForm.card" name="card" placeholder="**** **** **** ****" required>
-            </div>
-            <div class="row">
-              <div class="col-6 mb-3">
-                <label  class="form-label">Expiration</label>
-                <input type="text" class="form-control" [(ngModel)]="paymentForm.expiry" name="expiry" placeholder="MM/AA" required>
-              </div>
-              <div class="col-6 mb-3">
-                <label  class="form-label">CVV</label>
-                <input type="text" class="form-control" [(ngModel)]="paymentForm.cvv" name="cvv" placeholder="123" required>
-              </div>
+              <textarea class="form-control" [(ngModel)]="paymentForm.adresse" name="adresse_client" rows="2" required></textarea>
             </div>
             <button type="submit" class="btn btn-gradient w-100">Confirmer le paiement</button>
           </form>
@@ -169,7 +165,6 @@
       <div class="spinner-border text-primary" role="status"></div>
     </div>
 
-    <!-- Liste articles -->
     <div class="row g-4" *ngIf="!loadingArticles">
       <div class="col-md-4" *ngFor="let article of articles">
         <div class="product-card">
@@ -205,7 +200,7 @@
       <a href="#"><i class="fab fa-instagram"></i></a>
       <a href="#"><i class="fab fa-linkedin-in"></i></a>
     </div>
-    <p class="mb-0">© 2026 NovaCommerce - ESN E‑commerce</p>
+    <p class="mb-0">© RANDRIANIAINAHenry Henri Jean Flerys - RANDRIAMIARIMBOLA Jimmy</p>
   </div>
 </footer>
 

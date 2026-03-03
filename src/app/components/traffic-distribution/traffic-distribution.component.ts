@@ -4,12 +4,12 @@ import { MaterialModule } from 'src/app/material.module';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import { MatButtonModule } from '@angular/material/button';
 import {StatCommandeService} from "../../services/stat/stat.service";
-import {DecimalPipe} from "@angular/common";
+import {CommonModule, DecimalPipe} from "@angular/common";
 
 @Component({
   selector: 'app-traffic-distribution',
   standalone: true,
-  imports: [MaterialModule, TablerIconsModule, MatButtonModule, NgApexchartsModule, DecimalPipe],
+  imports: [MaterialModule, TablerIconsModule, MatButtonModule, NgApexchartsModule, DecimalPipe, CommonModule],
   templateUrl: './traffic-distribution.component.html',
 })
 export class AppTrafficDistributionComponent implements OnInit {
@@ -25,11 +25,13 @@ export class AppTrafficDistributionComponent implements OnInit {
   constructor(private statService: StatCommandeService) {}
 
   ngOnInit(): void {
-    this.loadDernierJour();
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    const idBoutique = authData.id_boutique;
+    this.loadDernierJour(idBoutique);
   }
 
-  loadDernierJour() {
-    this.statService.getStats('jour').subscribe({
+  loadDernierJour(idBoutique: string) {
+    this.statService.getStats('jour', idBoutique).subscribe({
       next: (res) => {
         const stats = res.data || [];
         if (!stats.length) return;

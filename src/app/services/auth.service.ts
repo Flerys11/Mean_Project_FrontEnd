@@ -34,7 +34,9 @@ export class AuthService {
   constructor(private http: HttpClient, private apiService: ApiService) {
     const stored = localStorage.getItem('authData');
     if (stored) {
-      this.authDataSubject.next(JSON.parse(stored));
+      const authData: AuthData = JSON.parse(stored);
+
+      this.authDataSubject.next(authData);
     }
   }
 
@@ -65,6 +67,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('authData');
     localStorage.removeItem('token');
+    localStorage.removeItem('bearer');
     this.authDataSubject.next(null);
   }
 

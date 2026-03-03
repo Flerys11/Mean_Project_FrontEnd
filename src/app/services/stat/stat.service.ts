@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiService } from '../api.service';
 
@@ -19,12 +19,26 @@ export class StatCommandeService {
     return `${this.api.ip}${this.base}${path}`;
   }
 
-  getStats(type: 'jour' | 'mois'): Observable<any> {
-    return this.http.get(this.url(`/${type}`));
+  getStats(type: 'jour' | 'mois', id_boutique: string): Observable<any> {
+
+    const params = new HttpParams()
+      .set('id_boutique', id_boutique);
+
+    return this.http.get(
+      this.url(`/${type}`),
+      {params}
+    );
   }
 
-  getStatsAnnee(): Observable<any> {
-    return this.http.get(this.url(`/annee`));
+  getStatsAnnee(id_boutique: string): Observable<any> {
+
+    const params = new HttpParams()
+      .set('id_boutique', id_boutique);
+
+    return this.http.get(
+      this.url(`/annee`),
+      { params }
+    );
   }
 
   getStatsByArticle(type: 'jour' | 'mois', idArticle: string): Observable<any> {

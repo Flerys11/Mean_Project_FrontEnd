@@ -33,8 +33,8 @@ export class CommandeService {
     return `${this.api.ip}${this.base}${path}`;
   }
 
-  getAll(): Observable<any> {
-    return this.http.get(this.url(''));
+  getAll(id: string): Observable<any> {
+    return this.http.get(this.url(`/${id}`));
   }
 
   validerCommande(id: string): Observable<any> {

@@ -6,12 +6,17 @@ import {ApiService} from "../api.service";
 export class BoutiqueService {
 
   private base = 'boutique';
+  private type_base = 'type_boutique';
 
   constructor(private http: HttpClient, private api: ApiService) {}
 
   getAll(page = 1, limit = 50) {
     return this.http.get(`${this.api.ip}${this.base}?page=${page}&limit=${limit}`);
   }
+
+  getAllType(page = 1, limit = 50) {
+      return this.http.get(`${this.api.ip}${this.type_base}?page=${page}&limit=${limit}`);
+    }
 
   create(data: any) {
     return this.http.post(this.api.ip + this.base, data);
