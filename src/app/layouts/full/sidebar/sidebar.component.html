@@ -1,10 +1,16 @@
 <div class="d-flex align-items-center justify-content-between">
-    <app-branding></app-branding>
+  <app-branding></app-branding>
 
-    @if(showToggle) {
-    <a href="javascript:void(0)" (click)="toggleMobileNav.emit()"
-        class="d-flex justify-content-center ng-star-inserted icon-40 align-items-center mat-body-1">
-        <i-tabler name="x" class="icon-20 d-flex"></i-tabler>
-    </a>
-    }
+  <a *ngIf="showToggle"
+     href="javascript:void(0)"
+     (click)="toggleMobileNav.emit()"
+     class="d-flex justify-content-center icon-40 align-items-center mat-body-1">
+    <i-tabler name="x" class="icon-20 d-flex"></i-tabler>
+  </a>
 </div>
+
+<!--<ul>-->
+<!--  <ng-container *ngFor="let item of navItems">-->
+<!--    <app-nav-item [item]="item"></app-nav-item>-->
+<!--  </ng-container>-->
+<!--</ul>-->

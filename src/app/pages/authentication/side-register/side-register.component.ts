@@ -5,6 +5,7 @@ import { MaterialModule } from 'src/app/material.module';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { BoutiqueService } from 'src/app/services/boutique/boutique.service';
+import { Location } from '@angular/common';
 
 @Component({
   standalone: true,
@@ -18,12 +19,14 @@ export class AppSideRegisterComponent implements OnInit {
   errorMessage = '';
   loading = false;
   boutiques: any[] = [];
+  type_boutiques: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private boutiqueService: BoutiqueService
+    private boutiqueService: BoutiqueService,
+    private location: Location
   ) {
 
     this.form = this.fb.group({
@@ -41,13 +44,26 @@ export class AppSideRegisterComponent implements OnInit {
     });
   }
 
+
+
   ngOnInit() {
     this.loadBoutiques();
+    this.loadTypeBoutiques()
+  }
+
+  goBack() {
+    this.location.back();
   }
 
   loadBoutiques() {
     this.boutiqueService.getAll().subscribe((res: any) => {
-      this.boutiques = res.docs || res;
+      this.boutiques = res.docs || res.data;
+    });
+  }
+
+  loadTypeBoutiques() {
+    this.boutiqueService.getAllType().subscribe((res: any) => {
+      this.type_boutiques = res.docs || res;
     });
   }
 
@@ -58,12 +74,14 @@ export class AppSideRegisterComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
+    console.log('Form values:', this.form.value);
+
     this.authService.register(this.form.value)
       .subscribe({
         next: () => {
           this.loading = false;
           alert('Inscription réussie');
-          this.router.navigate(['/authentication/login']);
+          this.goBack();
         },
         error: (err) => {
           this.loading = false;

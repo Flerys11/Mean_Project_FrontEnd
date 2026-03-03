@@ -3,7 +3,7 @@ import {
   Output,
   EventEmitter,
   Input,
-  ViewEncapsulation,
+  ViewEncapsulation, OnInit,
 } from '@angular/core';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import { MaterialModule } from 'src/app/material.module';
@@ -27,7 +27,7 @@ import { ConfirmLogoutDialogComponent } from './confirm-logout-dialog/confirm-lo
   templateUrl: './header.component.html',
   encapsulation: ViewEncapsulation.None,
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit{
   @Input() showToggle = true;
   @Input() toggleChecked = false;
   @Output() toggleMobileNav = new EventEmitter<void>();
@@ -35,6 +35,15 @@ export class HeaderComponent {
   @Output() toggleCollapsed = new EventEmitter<void>();
 
   constructor(private authService: AuthService, private router: Router, private dialog: MatDialog) {}
+
+  role: string | null = null;
+
+  ngOnInit(): void {
+    const stored = localStorage.getItem('authData');
+    if (stored) {
+      this.role = JSON.parse(stored).role;
+    }
+  }
 
   logout() {
     const dialogRef = this.dialog.open(ConfirmLogoutDialogComponent, {

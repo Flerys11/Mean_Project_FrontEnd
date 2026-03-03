@@ -42,7 +42,9 @@ const BELOWMONITOR = 'screen and (max-width: 1023px)';
 
 export class FullComponent implements OnInit {
 
-  navItems = navItems;
+  navItems: any[] = [];
+  role: string | null = null;
+
 
   @ViewChild('leftsidenav')
   public sidenav: MatSidenav | any;
@@ -73,7 +75,34 @@ export class FullComponent implements OnInit {
       });
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+
+    const stored = localStorage.getItem('authData');
+    if (stored) {
+      this.role = JSON.parse(stored).role;
+    }
+
+    this.navItems = navItems
+      .map(item => this.filterByRole(item))
+      .filter(item => !!item);
+  }
+
+  private filterByRole(item: any): any {
+
+    if (item.roles && this.role && !item.roles.includes(this.role)) {
+      return null;
+    }
+
+    const newItem = { ...item };
+
+    if (item.children && item.children.length) {
+      newItem.children = item.children
+        .map((child: any) => this.filterByRole(child))
+        .filter((child: any) => !!child);
+    }
+
+    return newItem;
+  }
 
   ngOnDestroy() {
     this.layoutChangesSubscription.unsubscribe();

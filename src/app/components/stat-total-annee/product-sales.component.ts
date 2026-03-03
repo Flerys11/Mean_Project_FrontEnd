@@ -4,12 +4,12 @@ import { MaterialModule } from 'src/app/material.module';
 import { TablerIconsModule } from 'angular-tabler-icons';
 import { MatButtonModule } from '@angular/material/button';
 import {StatCommandeService} from "../../services/stat/stat.service";
-import {DecimalPipe} from "@angular/common";
+import {CommonModule, DecimalPipe} from "@angular/common";
 
 @Component({
   selector: 'app-stat-total-annee',
   standalone: true,
-  imports: [MaterialModule, TablerIconsModule, MatButtonModule, NgApexchartsModule, DecimalPipe],
+  imports: [MaterialModule, TablerIconsModule, MatButtonModule, NgApexchartsModule, DecimalPipe, CommonModule],
   templateUrl: './product-sales.component.html',
 })
 export class AppProductSalesComponent implements OnInit {
@@ -22,6 +22,7 @@ export class AppProductSalesComponent implements OnInit {
   totalCA = 0;
   totalCommandes = 0;
 
+
   constructor(private statService: StatCommandeService) {}
 
   ngOnInit(): void {
@@ -29,7 +30,11 @@ export class AppProductSalesComponent implements OnInit {
   }
 
   loadStatsAnnee() {
-    this.statService.getStatsAnnee().subscribe({
+
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    const idBoutique = authData.id_boutique;
+
+    this.statService.getStatsAnnee(idBoutique).subscribe({
       next: (res) => {
         const stat = res.data?.[0];
 

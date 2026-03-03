@@ -17,14 +17,17 @@
     <img src="/assets/images/profile/user-1.jpg" class="rounded-circle object-cover" width="35" />
   </button>
   <mat-menu #profilemenu="matMenu" xPosition="before" class="cardWithShadow">
-    <button mat-menu-item>
+
+    <button mat-menu-item *ngIf="role === 'USER' || role === 'ADMIN'">
       <mat-icon class="d-flex align-items-center">
         <i-tabler name="user" class="icon-18 d-flex"></i-tabler>
       </mat-icon>
       <span>Mon Profil</span>
     </button>
 
-    <button mat-menu-item [routerLink]="['/authentication/register']">
+    <button mat-menu-item
+            *ngIf="role === 'ADMIN'"
+            [routerLink]="['/authentication/register']">
       <mat-icon class="d-flex align-items-center">
         <i-tabler name="user-plus" class="icon-18 d-flex"></i-tabler>
       </mat-icon>
@@ -37,6 +40,7 @@
       </mat-icon>
       <span>Déconnexion</span>
     </button>
+
   </mat-menu>
 
 </mat-toolbar>
