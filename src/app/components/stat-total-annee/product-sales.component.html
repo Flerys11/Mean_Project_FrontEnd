@@ -28,6 +28,7 @@
   </div>
 
   <apx-chart
+    *ngIf="productsalesChart"
     [series]="productsalesChart.series"
     [chart]="productsalesChart.chart"
     [stroke]="productsalesChart.stroke"

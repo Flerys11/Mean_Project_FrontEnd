@@ -11,7 +11,7 @@
     </div>
 
     <apx-chart
-      #chart
+      *ngIf="profitExpanceChart"
       [series]="profitExpanceChart.series"
       [chart]="profitExpanceChart.chart"
       [dataLabels]="profitExpanceChart.dataLabels"
@@ -21,8 +21,7 @@
       [plotOptions]="profitExpanceChart.plotOptions"
       [stroke]="profitExpanceChart.stroke"
       [tooltip]="profitExpanceChart.tooltip"
-      [legend]="profitExpanceChart.legend"
-    >
+      [legend]="profitExpanceChart.legend">
     </apx-chart>
 
   </mat-card-content>

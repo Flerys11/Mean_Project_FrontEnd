@@ -44,7 +44,6 @@ export class AppTablesComponent implements OnInit {
   loadArticles() {
     this.articleService.getAllArticles().subscribe({
       next: (res) => {
-
         this.dataSource1 = res.data || res.docs || res;
       },
       error: (err) => {
@@ -52,6 +51,7 @@ export class AppTablesComponent implements OnInit {
       }
     });
   }
+
 
   deleteArticle(id: string) {
     if(confirm('Supprimer cet article ?')) {
