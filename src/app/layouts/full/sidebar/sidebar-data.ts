@@ -11,6 +11,12 @@ export const navItems: NavItem[] = [
     route: '/dashboard',
   },
   {
+    displayName: 'Statistique article',
+    iconName: 'layout-dashboard',
+    bgcolor: 'primary',
+    route: '/dashboard/stat-article',
+  },
+  {
     navCap: 'Gestion du Boutique',
   },
 

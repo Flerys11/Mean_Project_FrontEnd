@@ -1,0 +1,30 @@
+<mat-card class="cardWithShadow">
+  <mat-card-content class="p-24">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <mat-card-title>Statistique Ventes – {{ nomArticle }}</mat-card-title>
+
+      <div>
+        <button mat-raised-button color="primary" (click)="changeType('jour')" [disabled]="selectedType==='jour'">Jour</button>
+        <button mat-raised-button color="accent" (click)="changeType('mois')" [disabled]="selectedType==='mois'">Mois</button>
+      </div>
+    </div>
+
+    <apx-chart
+      #chart
+      *ngIf="profitExpanceChart"
+      [series]="profitExpanceChart.series"
+      [chart]="profitExpanceChart.chart"
+      [dataLabels]="profitExpanceChart.dataLabels"
+      [xaxis]="profitExpanceChart.xaxis"
+      [yaxis]="profitExpanceChart.yaxis"
+      [grid]="profitExpanceChart.grid"
+      [plotOptions]="profitExpanceChart.plotOptions"
+      [stroke]="profitExpanceChart.stroke"
+      [tooltip]="profitExpanceChart.tooltip"
+      [legend]="profitExpanceChart.legend"
+    >
+    </apx-chart>
+
+  </mat-card-content>
+</mat-card>
