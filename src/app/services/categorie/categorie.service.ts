@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {ApiService} from "../api.service";
 
 export interface Categorie {
   _id: string;
@@ -10,23 +11,23 @@ export interface Categorie {
 @Injectable({ providedIn: 'root' })
 export class CategorieService {
 
-  private apiUrl = 'http://localhost:3000/categorie';
+  private base = 'categorie';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private api : ApiService) { }
 
   getAll(page = 1, limit = 50) {
-    return this.http.get(`${this.apiUrl}?page=${page}&limit=${limit}`);
+    return this.http.get(`${this.api.ip}${this.base}?page=${page}&limit=${limit}`);
   }
 
   create(data: any) {
-    return this.http.post(this.apiUrl, data);
+    return this.http.post(this.api.ip + this.base, data);
   }
 
   update(id: string, data: any) {
-    return this.http.put(`${this.apiUrl}/${id}`, data);
+    return this.http.put(`${this.api.ip}${this.base}/${id}`, data);
   }
 
   delete(id: string) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.api.ip}${this.base}/${id}`);
   }
 }

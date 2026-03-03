@@ -38,6 +38,7 @@
 
       <div class="col-5 d-flex align-items-start">
         <apx-chart
+          *ngIf="trafficdistributionChart"
           [series]="trafficdistributionChart.series"
           [labels]="trafficdistributionChart.labels"
           [chart]="trafficdistributionChart.chart"
