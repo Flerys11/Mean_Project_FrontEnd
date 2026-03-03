@@ -55,14 +55,14 @@
     <div class="modal-body">
       <div class="row g-4">
         <div class="col-md-6">
-          <img [src]="currentProductImage" class="img-fluid rounded-4 mb-3" alt="Image principale">
+          <img [src]="getPhotoUrl(currentProductImage)" class="img-fluid rounded-4 mb-3" alt="Image principale">
           <div class="d-flex gap-2 flex-wrap thumbnails">
             <img *ngFor="let thumb of currentProductThumbnails; let i = index"
-              [src]="thumb"
-              class="thumbnail"
-              [class.active]="i === 0"
-              (click)="selectThumbnail(i, thumb)"
-              alt="Miniature">
+                 [src]="getPhotoUrl(thumb)"
+                 class="thumbnail"
+                 [class.active]="i === selectedThumbnailIndex"
+                 (click)="selectThumbnail(i, thumb)"
+                 alt="Miniature">
           </div>
         </div>
         <div class="col-md-6">
@@ -115,25 +115,29 @@
           <form (ngSubmit)="submitPayment()">
             <div class="mb-3">
               <label  class="form-label">Nom complet</label>
-              <input type="text" class="form-control" [(ngModel)]="paymentForm.nom" name="nom" required>
+              <input type="text" class="form-control" [(ngModel)]="paymentForm.name" name="name" required>
             </div>
             <div class="mb-3">
-              <label  class="form-label">Contact</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="paymentForm.contact"
-                name="contact"
-                required
-                maxlength="10"
-                minlength="10"
-                pattern="^(032|033|034|038)\d{7}$"
-                placeholder="0341234567"
-              />
+              <label  class="form-label">Email</label>
+              <input type="email" class="form-control" [(ngModel)]="paymentForm.email" name="email" required>
             </div>
             <div class="mb-3">
               <label  class="form-label">Adresse de livraison</label>
-              <textarea class="form-control" [(ngModel)]="paymentForm.adresse" name="adresse_client" rows="2" required></textarea>
+              <textarea class="form-control" [(ngModel)]="paymentForm.address" name="address" rows="2" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label  class="form-label">Numéro de carte</label>
+              <input type="text" class="form-control" [(ngModel)]="paymentForm.card" name="card" placeholder="**** **** **** ****" required>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label  class="form-label">Expiration</label>
+                <input type="text" class="form-control" [(ngModel)]="paymentForm.expiry" name="expiry" placeholder="MM/AA" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label  class="form-label">CVV</label>
+                <input type="text" class="form-control" [(ngModel)]="paymentForm.cvv" name="cvv" placeholder="123" required>
+              </div>
             </div>
             <button type="submit" class="btn btn-gradient w-100">Confirmer le paiement</button>
           </form>
@@ -157,7 +161,7 @@
   <div class="container">
     <div class="text-center mb-5">
       <h2 class="fw-bold display-5">Nos Articles</h2>
-      <p class="text-muted fs-4">Des solutions puissantes pour vos besoins</p>
+      <p class="text-muted fs-4">Des solutions puissantes pour accélérer votre business</p>
     </div>
 
     <!-- Loading -->

@@ -26,4 +26,13 @@ export class StatCommandeService {
   getStatsAnnee(): Observable<any> {
     return this.http.get(this.url(`/annee`));
   }
+
+  getStatsByArticle(type: 'jour' | 'mois', idArticle: string): Observable<any> {
+    return this.http.get(this.url(`/${type}/${idArticle}`));
+  }
+
+  getStatsByArticleAnnee(idArticle: string): Observable<any> {
+    return this.http.get(this.url(`/annee/${idArticle}`));
+  }
+
 }

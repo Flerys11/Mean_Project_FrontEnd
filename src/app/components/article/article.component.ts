@@ -3,13 +3,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from 'src/app/material.module';
 import { ArticleService } from 'src/app/services/article/article.service';
-import { BoutiqueService } from 'src/app/services/boutique/boutique.service';
 import { CategorieService } from 'src/app/services/categorie/categorie.service';
-import { DynamicFormDialogComponent } from 'src/app/components/dialog/dynamic-form-dialog/dynamic-form-dialog.component';
+import { ArticleDialogComponent } from 'src/app/components/dialog/article/article-dialog.component';
+
 @Component({
   standalone: true,
   selector: 'app-article',
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MaterialModule, ArticleDialogComponent],
   templateUrl: './article.component.html'
 })
 export class ArticleComponent implements OnInit {
@@ -22,7 +22,6 @@ export class ArticleComponent implements OnInit {
 
   constructor(
     private articleService: ArticleService,
-    private boutiqueService: BoutiqueService,
     private categorieService: CategorieService,
     private dialog: MatDialog
   ) {}
@@ -32,68 +31,71 @@ export class ArticleComponent implements OnInit {
   }
 
   loadAll() {
-    this.articleService.getAllArticles().subscribe((res: any) => {
-      this.articles = res.docs || res;
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    const idBoutique = authData.id_boutique;
+
+    this.articleService.getArticlesByBoutique(idBoutique).subscribe((res: any) => {
+      this.articles = Array.isArray(res) ? res : (res.docs || res.data || []);
     });
 
-    this.boutiqueService.getAll().subscribe((res: any) => {
-      this.boutiques = res.docs || res;
-    });
 
     this.categorieService.getAll().subscribe((res: any) => {
-      this.categories = res.docs || res;
+      this.categories = Array.isArray(res) ? res : (res.docs || res.data || []);
     });
   }
 
   openCreateDialog() {
-    this.dialog.open(DynamicFormDialogComponent, {
-      width: '500px',
+    this.dialog.open(ArticleDialogComponent, {
+      width: '550px',
+      disableClose: true,
       data: {
         title: 'Ajouter Article',
-        fields: [
-          { name: 'nom_article', label: 'Nom', type: 'text', required: true },
-          { name: 'prix', label: 'Prix', type: 'number', required: true },
-          { name: 'description', label: 'Description', type: 'text', required: true },
-          { name: 'id_categorie', label: 'Catégorie', type: 'select', options: this.categories, required: true },
-          { name: 'id_boutique', label: 'Boutique', type: 'select', options: this.boutiques, required: true },
-          { name: 'photo', label: 'Photos', type: 'file' }
-        ]
+        categories: this.categories,
+        values: null
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        this.articleService.createArticle(result).subscribe(() => this.loadAll());
+        this.articleService.createArticle(result).subscribe({
+          next: () => {
+            this.loadAll();
+          },
+          error: (err) => {
+            console.error('Erreur lors de la création:', err);
+          }
+        });
       }
     });
   }
 
   openEditDialog(article: any) {
-
-    this.dialog.open(DynamicFormDialogComponent, {
-      width: '500px',
+    this.dialog.open(ArticleDialogComponent, {
+      width: '550px',
+      disableClose: true,
       data: {
         title: 'Modifier Article',
-        values: article,
-        fields: [
-          { name: 'nom_article', label: 'Nom', type: 'text', required: true },
-          { name: 'prix', label: 'Prix', type: 'number', required: true },
-          { name: 'description', label: 'Description', type: 'text', required: true },
-          { name: 'id_categorie', label: 'Catégorie', type: 'select', options: this.categories, required: true },
-          { name: 'id_boutique', label: 'Boutique', type: 'select', options: this.boutiques, required: true },
-          { name: 'photo', label: 'Photos', type: 'file' }
-        ]
+        categories: this.categories,
+        values: article
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        this.articleService.updateArticle(article._id, result)
-          .subscribe(() => this.loadAll());
+        this.articleService.updateArticle(article._id, result).subscribe({
+          next: () => {
+            this.loadAll();
+          },
+          error: (err) => {
+            console.error('Erreur lors de la modification:', err);
+          }
+        });
       }
     });
   }
 
   deleteArticle(id: string) {
     if (confirm('Supprimer cet article ?')) {
-      this.articleService.deleteArticle(id)
-        .subscribe(() => this.loadAll());
+      this.articleService.deleteArticle(id).subscribe({
+        next: () => this.loadAll(),
+        error: (err) => console.error('Erreur lors de la suppression:', err)
+      });
     }
   }
 }
